@@ -74,25 +74,6 @@ class General(object):
         if not os.path.exists(directory):
             os.makedirs(directory)
 
-    #for varying data in the ECU
-    # @staticmethod
-    # def get_jitter(value):
-
-    #     if value == ECU.Battery:
-    #         return random.uniform(0.1, 0.5)
-    #     elif value == ECU.Driver:
-    #         return random.uniform(0.1,0.9)
-    #     elif value == ECU.Brakes:
-    #         return random.uniform(0.1,0.4)
-    #     elif value == ECU.Trans:
-    #         return random.uniform(0.1,0.3)
-    #     elif value == ECU.V_C:
-    #         return random.uniform(0.1,0.6)
-    #     elif value == ECU.I_M:
-    #         return 0
-
-    #     return 0
-
     @staticmethod
     def get_dataset(data_type):
 
