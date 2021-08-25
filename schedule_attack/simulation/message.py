@@ -1,4 +1,3 @@
-import random
 from utils.general import *
 from ..base.message import Message
 
