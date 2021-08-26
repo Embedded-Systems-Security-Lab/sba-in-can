@@ -50,3 +50,6 @@ Thumbs.db
 
 # Virtual environment
 venv/
+
+# Generated data files
+data/
