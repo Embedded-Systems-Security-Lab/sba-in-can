@@ -6,10 +6,27 @@ import sys
 
 class ReverseLogs(object):
 
-    def __init__(self, log_list=[]):
+    def __init__(self, csv_file, bus_speed):
         super(ReverseLogs, self).__init__()
-        #self.log_list = log_list
+        self.bus_speed = bus_speed
+        self.log_from_csv(csv_file)
 
+
+    def log_from_csv(self, csv_file):
+        self.log_list = []
+        with open(csv_file, 'r') as file:
+          has_header = csv.Sniffer().has_header(file.read(General.HEADER_DATA_BYTE))
+          file.seek(0)
+          reader = csv.reader(file)
+          if has_header:
+              next(reader)
+          for row in reader:
+              ID = int(row[0],16)
+              DLC = int(row[1])
+              DATA = row[2]
+              timestamp = float(row[3])
+              transmission_time = General.get_transmission_time(DLC,max_bit=30)
+              self.log_list.append(Message(ID, DLC, DATA, timestamp, transmission_time))
 
     def find_previous_lower_id(self, index):
         lower_id = index - 1
@@ -27,7 +44,7 @@ class ReverseLogs(object):
 
         return lower_id
 
-    def period_bounds(self,bus_speed):
+    def period_bounds(self):
         if not self.log_list:
             print("The log list is empty")
             return
@@ -38,17 +55,15 @@ class ReverseLogs(object):
         dlc = 0
         phase = 0
 
-        #id_list = []
         id_list = {}
         unique_id_vars = {}
-
 
         """Iterate through the unique ids to find the lower and upper bound"""
         for unique_id in unique_ids:
             instance_of_unique_id = 1
             upper_bound = 10000
             lower_bound = -1
-            delta = 1/General.BUS_SPEED
+            delta = 1/self.bus_speed
             got_offset = False
             offset_val = None
 
@@ -57,19 +72,10 @@ class ReverseLogs(object):
                 lower = -1
                 upper = 1000
                 if unique_id == self.log_list[i].id :
-                    #print i
-                    #self.unique_ids_with_period.setdefault(unique_id, {"timestamp": [], "new_timestamp": []})["timestamp"].append(self.log_list[i].timestamp)
                     if instance_of_unique_id > 1:
                         lower_id = i - 1
                         while lower_id >= 0:
 
-                            # if abs(int(self.log_list[lower_id].id)) == abs(int(self.log_list[i].id)):
-                            #   lower_id = -1
-                            #   break
-                            # if float(self.log_list[lower_id+1].timestamp) - float(self.log_list[lower_id].timestamp) \
-                            #   - float(self.log_list[lower_id+1].transmission_time) > General.EPSILON:
-                            #   lower_id = lower_id + 1
-                            #   break
                             if abs(int(self.log_list[lower_id].id)) < abs(int(self.log_list[i].id)):
                                 lower_id -= 1
                             else:
@@ -77,12 +83,8 @@ class ReverseLogs(object):
 
                         if (lower_id <= 0):
                             continue
-                        #print(self.log_list[i].timestamp, self.log_list[i].transmission_time, self.log_list[i-1].timestamp, self.log_list[i].timestamp - self.log_list[i].transmission_time)
-                        if not got_offset and ((self.log_list[i].timestamp - self.log_list[i].transmission_time) > (self.log_list[i-1].timestamp + 0/General.BUS_SPEED)):#+ 3/General.BUS_SPEED
-                            #print(self.log_list[i].timestamp - self.log_list[i].transmission_time, self.log_list[i-1].timestamp, self.log_list[i-1].timestamp + 0/General.BUS_SPEED)
+                        if not got_offset and ((self.log_list[i].timestamp - self.log_list[i].transmission_time) > (self.log_list[i-1].timestamp + 0/self.bus_speed)):#+ 3/General.BUS_SPEED
                             offset_val = (self.log_list[i].timestamp - self.log_list[i].transmission_time, instance_of_unique_id-1)
-                            #print(offset_val)
-                            #print(offset_val, hex(unique_id), self.log_list[i].timestamp, self.log_list[i].transmission_time, instance_of_unique_id)
                             got_offset = True
 
                         timestamp_offset = float(self.log_list[lower_id].timestamp) - timestamp
@@ -93,8 +95,6 @@ class ReverseLogs(object):
                         timestamp = self.log_list[i].timestamp - self.log_list[i].transmission_time
                         dlc = self.log_list[i].dlc
                         data = self.log_list[i].data
-                        #cp = self.log_list[i].transmission_time
-                        #print(cp, timestamp)
                     if (abs(upper - lower ) < delta):
                         lower_bound = lower
                         upper_bound = upper

@@ -93,7 +93,7 @@ class Simulation(object):
 
     def run_simulation(self, max_time=4000):
         finished_jobs = []
-        delta = 1/(self.bus_speed * 1000)
+        delta = 1/(self.bus_speed * 100)
         r_time = 0.0
         while r_time < max_time:
             print("At t = " + str(r_time))

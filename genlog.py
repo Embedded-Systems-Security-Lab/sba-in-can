@@ -23,7 +23,6 @@ def main():
     for index in range(len(General.HARMONIC_DATA)):
         for num in range(args.num_runs):
 
-
             sum_util = -10
             tryout = 0
             while (sum_util < args.min_util) and (tryout < max_tryout):
@@ -48,6 +47,7 @@ def main():
                     job_list,
                     num=str(tag_num) + "-" + str(round(sum_util, 4)))
             del job_list[:]
+            sys.exit()
 
 
 if __name__ == '__main__':
