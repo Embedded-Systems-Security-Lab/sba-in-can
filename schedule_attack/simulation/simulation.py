@@ -91,7 +91,7 @@ class Simulation(object):
         p_job.is_active = True
         return p_job
 
-    def run_simulation(self, max_time=4000, no_jitter=True):
+    def run_simulation(self, max_time=4000):
         finished_jobs = []
         delta = 1/(self.bus_speed * 1000)
         r_time = 0.0
@@ -136,12 +136,6 @@ class Simulation(object):
 
         return finished_jobs
 
-
-def main():
-
-    s = Simulation(random.seed(0), bus_speed=500000)
-    period_file = s.job_init("testing", 10,0,name="periodfile_")
-    s.run_simulation(100)
 
 
 if __name__ == '__main__':
