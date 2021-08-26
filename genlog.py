@@ -7,7 +7,8 @@ parser = argparse.ArgumentParser()
 parser.add_argument("--seed", type=int, help="Random seed for the simulation", default=0x1234AB)
 parser.add_argument("--num_jobs", type=int, help="Number of distinct PIDs to simulate", default=10)
 parser.add_argument("--num_runs", type=int, help="Running the first simulation from file", default=2)
-parser.add_argument("--sim_time", type=int, help="Running the first simulation from file", default=10)
+parser.add_argument("--sim_time", type=int, help="Number of milliseconds to run the simulation", default=10)
+parser.add_argument("--min_util", type=int, help="Minimium Bus Utilization for messages to run simulation", default=0.5)
 parser.add_argument("--name_tag", type=str, help="Tag to insert in output filenames", default="default")
 args = parser.parse_args()
 
@@ -21,9 +22,11 @@ def main():
     csv_folder = "data"
     for index in range(len(General.HARMONIC_DATA)):
         for num in range(args.num_runs):
-            sum_util = 100
+
+
+            sum_util = -10
             tryout = 0
-            while ((sum_util < 0.5) or (sum_util > 1.0)) and (tryout < max_tryout):
+            while (sum_util < args.min_util) and (tryout < max_tryout):
                 sim.clear_heapq()
                 # TODO: embed a useful tag in the file names
                 tag_num = index*args.num_runs + num
@@ -35,8 +38,8 @@ def main():
 
                 tryout += 1
                 sum_util = sim.calc_util()
-                if tryout == max_tryout and ((sum_util < 0.5) or (sum_util > 1.0)):
-                    print("Not Schedulableafter trying {} times".format(tryout))
+                if tryout == max_tryout and (sum_util < args.min_util):
+                    print("Not Schedulable after trying {} times".format(tryout))
                     sys.exit()
             job_list = sim.run_simulation(args.sim_time)
             # TODO: embed a useful tag in the file names
