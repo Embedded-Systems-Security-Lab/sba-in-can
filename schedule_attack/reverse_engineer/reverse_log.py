@@ -2,6 +2,8 @@ import os
 import csv
 import math
 import sys
+from ..utils.general import *
+from .message import REVMessage
 
 
 class ReverseLogs(object):
@@ -25,8 +27,8 @@ class ReverseLogs(object):
               DLC = int(row[1])
               DATA = row[2]
               timestamp = float(row[3])
-              transmission_time = General.get_transmission_time(DLC,max_bit=30)
-              self.log_list.append(Message(ID, DLC, DATA, timestamp, transmission_time))
+              transmission_time = General.get_transmission_time(DLC,self.bus_speed)
+              self.log_list.append(REVMessage(ID, DLC, DATA, timestamp, transmission_time))
 
     def find_previous_lower_id(self, index):
         lower_id = index - 1
@@ -45,9 +47,6 @@ class ReverseLogs(object):
         return lower_id
 
     def period_bounds(self):
-        if not self.log_list:
-            print("The log list is empty")
-            return
 
         unique_ids = list(set({log.id for log in self.log_list}))
         unique_ids.sort()
@@ -103,7 +102,7 @@ class ReverseLogs(object):
                         break
 
                     instance_of_unique_id += 1
-                    if (round((lower + General.TOLERANCE),5) < round(lower_bound,5)) or (round(upper,5) > round((upper_bound + General.TOLERANCE),5)):
+                    if (round((lower + General.EPSILON),5) < round(lower_bound,5)) or (round(upper,5) > round((upper_bound + General.EPSILON),5)):
                         continue
                     else:
                         if instance_of_unique_id - 1 > 2:
@@ -123,8 +122,7 @@ class ReverseLogs(object):
                 timestamp = timestamp
             id_list[unique_id] = upper_bound
 
-            #self.unique_ids_with_period[unique_id]["period"] = round(upper_bound, 6)
 
 
-            print ("ID: " +str(unique_id)+"\t [" +  str(lower_bound) + "," + str(upper_bound) + "]" + "\t" + str(timestamp))
+            print ("ID: " +str(unique_id)+"\t [" +  str(lower_bound) + "," + str(upper_bound) + "]")
         return id_list

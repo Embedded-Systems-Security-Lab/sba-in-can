@@ -1,5 +1,4 @@
 import time
-import enum
 import random
 import os
 from functools import reduce
@@ -12,7 +11,7 @@ class General(object):
     """docstring for General"""
 
     STUFF_LEN = 5
-    EPSILON = 0.0000001
+    EPSILON = 0.00001
     HEADER_DATA_BYTE = 1024
 
     #First data sets

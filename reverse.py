@@ -1,11 +1,9 @@
-from .reverse_engineer.reverse_logs import ReverseLogs
+from schedule_attack.reverse_engineer.reverse_log import ReverseLogs
 
 def main():
 
-    s = ReverseLogs()
-
-    s.period_bounds("../temp/20210505-160928_0_log.csv")
-
+    s = ReverseLogs("data/20210826-173253_0-0.6233_log.csv", 500)
+    s.period_bounds()
 
 if __name__ == "__main__":
 

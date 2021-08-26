@@ -4,10 +4,11 @@ from ..base.message import Message
 class SIMMessage(Message):
 
     def __init__(self, id, dlc, period, transmission_time,data,offset, jitter=0):
-        super(SIMMessage, self).__init__(id, dlc, data, offset, transmission_time)
+        super(SIMMessage, self).__init__(id, dlc, data, transmission_time)
         self.release_time = offset
         self.period = period
         self.jitter = jitter
+        self.offset = offset
         self.instance_no = 0
         self.is_pending = True
         self.is_active = False
