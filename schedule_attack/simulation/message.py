@@ -1,17 +1,17 @@
-from utils.general import *
+from ..utils.general import *
 from ..base.message import Message
 
 class SIMMessage(Message):
 
-    def __init__(self, id, dlc, period, timestamp, transmission_time,data,release_time, jitter=0):
-        super(SIMMessage, self).__init__(id, dlc, data, timestamp, transmission_time)
-        self.release_time = release_time
+    def __init__(self, id, dlc, period, transmission_time,data,offset, jitter=0):
+        super(SIMMessage, self).__init__(id, dlc, data, offset, transmission_time)
+        self.release_time = offset
+        self.period = period
         self.jitter = jitter
-        self.is_offset = False
-        self.is_jitter = False
+        self.instance_no = 0
         self.is_pending = True
         self.is_active = False
-        self.end_transmission = self.transmission_time + self.release_time
+        self.end_transmission_time = self.transmission_time + self.release_time # Not accurate, dummy value
 
     def __lt__(self, other):
         if self.is_active:
