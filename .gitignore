@@ -53,3 +53,6 @@ venv/
 
 # Generated data files
 data/
+
+#Python folders we cannot use
+__pycache__/
