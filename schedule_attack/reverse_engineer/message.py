@@ -7,8 +7,5 @@ class REVMessage(Message):
         self.timestamp = timestamp
 
 
-    def __repr__(self):
-        return "Message('{}', '{}', '{}', '{}', '{}' )".format(self.id,self.dlc, self.data, self.offset, self.transmission_time)
-
     def __str__(self):
-        return "id : {}, dlc: {}, data: {}, offset: {}, Transmission: {}".format(self.id,self.dlc, self.data, self.offset, self.transmission_time)
+        return "id : {}, dlc: {}, data: {}, offset: {}, Transmission: {}".format(self.id,self.dlc, self.data, self.offset, self.transmission_time, self.timestamp)
