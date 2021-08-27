@@ -38,8 +38,8 @@ periods = [r_info[key] for key in keys if key != 1]
 hyperperiod = General.lcm(periods)
 print(hyperperiod) # Round off error from floating number
 # Using manual inspection
-#hyperperiod = 1.009745
-hyperperiod = 1
+hyperperiod = 1.009745
+#hyperperiod = 1
 sequence = 1 * hyperperiod
 
 sequence_list = get_hyperperiod_list(data, sequence)
