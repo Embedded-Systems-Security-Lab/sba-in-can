@@ -27,7 +27,6 @@ def main():
             tryout = 0
             while (sum_util < args.min_util) and (tryout < max_tryout):
                 sim.clear_heapq()
-                # TODO: embed a useful tag in the file names
                 tag_num = index*args.num_runs + num
                 period_file = sim.job_init(
                         csv_folder,
@@ -41,13 +40,11 @@ def main():
                     print("Not Schedulable after trying {} times".format(tryout))
                     sys.exit()
             job_list = sim.run_simulation(args.sim_time)
-            # TODO: embed a useful tag in the file names
             file_name = General.log_to_csv(
                     csv_folder,
                     job_list,
                     num=str(tag_num) + "-" + str(round(sum_util, 4)))
             del job_list[:]
-            sys.exit()
 
 
 if __name__ == '__main__':
