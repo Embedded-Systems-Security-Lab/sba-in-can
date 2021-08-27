@@ -1,29 +1,22 @@
-# README #
+# Schedule Based Bus off Attack Analysis on CAN  #
 
-This README would normally document whatever steps are necessary to get your application up and running.
 
-### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+### The Code contains 3 sections ###
 
-### How do I get set up? ###
+* Simulation of CAN Data
+* Reverse Engineer CAN DATA log files
+* Analysis of CAN Data
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+### How to run the code ###
 
-### Contribution guidelines ###
+* Install libraries using requirements.txt file
+* To run simulation run genlog.py
+* To reverse engineer files run reverse.py
+* TODO: Add what to do in Analysis part
 
-* Writing tests
-* Code review
-* Other guidelines
 
 ### Who do I talk to? ###
-
+TODO:
 * Repo owner or admin
 * Other community or team contact
