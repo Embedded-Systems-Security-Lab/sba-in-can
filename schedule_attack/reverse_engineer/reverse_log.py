@@ -10,7 +10,7 @@ from .message import REVMessage
 
 class ReverseLogs(object):
 
-    def __init__(self, csv_file, bus_speed, log_file="reverse.log"):
+    def __init__(self, csv_file, bus_speed, log_file="reverselogger.log"):
         super(ReverseLogs, self).__init__()
         self.bus_speed = bus_speed
         self.log_from_csv(csv_file)
@@ -127,5 +127,5 @@ class ReverseLogs(object):
 
 
 
-            self.logger.info("ID: " +str(unique_id)+"\t [" +  str(lower_bound) + "," + str(upper_bound) + "]")
+            self.logger.info("ID: {} \t  lower bound: {} \t  upper bound: {} ".format(unique_id,lower_bound,upper_bound ))
         return id_list
