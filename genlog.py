@@ -1,5 +1,6 @@
 from schedule_attack.simulation.simulation import *
 from schedule_attack.utils.general import *
+from schedule_attack.utils.logger import CustomLogger
 import argparse
 import sys
 
@@ -10,12 +11,15 @@ parser.add_argument("--num_runs", type=int, help="Running the first simulation f
 parser.add_argument("--sim_time", type=int, help="Number of milliseconds to run the simulation", default=10)
 parser.add_argument("--min_util", type=int, help="Minimium Bus Utilization for messages to run simulation", default=0.5)
 parser.add_argument("--name_tag", type=str, help="Tag to insert in output filenames", default="default")
+parser.add_argument("--logger_name", type=str, help="Logger name to add logger", default="Genlog_logger.log")
 args = parser.parse_args()
+
+logger = CustomLogger(__name__,args.logger_name)
 
 def main():
 
     if args.num_jobs <= 0:
-        print('At least 1 job is required!')
+        logger.warning('At least 1 job is required!')
         sys.exit(1)
     max_tryout = 10_000
     sim = Simulation(args.seed, bus_speed=500)
@@ -37,7 +41,7 @@ def main():
                 tryout += 1
                 sum_util = sim.calc_util()
                 if tryout == max_tryout and (sum_util < args.min_util):
-                    print("Not Schedulable after trying {} times".format(tryout))
+                    logger.info("Not Schedulable after trying {} times".format(tryout))
                     sys.exit()
             job_list = sim.run_simulation(args.sim_time)
             file_name = General.log_to_csv(
