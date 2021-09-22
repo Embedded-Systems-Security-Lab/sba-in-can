@@ -10,7 +10,7 @@ from .message import REVMessage
 
 class ReverseLogs(object):
 
-    def __init__(self, csv_file, bus_speed, log_file="reverselogger.log"):
+    def __init__(self, csv_file, bus_speed, log_file="reverse_logger.log"):
         super(ReverseLogs, self).__init__()
         self.bus_speed = bus_speed
         self.log_from_csv(csv_file)
