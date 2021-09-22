@@ -74,3 +74,26 @@ class General(object):
             writer.writeheader()
             for data in dict_data:
                 writer.writerow(data)
+
+    @staticmethod
+    def get_hyperperiod_list(data,hyperperiod=None):
+        hyperperiod_list = []
+        for msg in data:
+            if hyperperiod != None:
+                if msg.timestamp > hyperperiod:
+                    return hyperperiod_list
+            hyperperiod_list.append(msg.id)
+        return hyperperiod_list
+
+    @staticmethod
+    def get_preceded_id(sequence_list):
+        res = {}
+        for i in range(1, len(sequence_list)):
+            id = sequence_list[i]
+            if id in res:
+                if sequence_list[i-1] not in res[id]:
+                    res[id].append(sequence_list[i-1])
+            else:
+                res[id] = [sequence_list[i-1]]
+
+        return res
