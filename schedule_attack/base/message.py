@@ -9,6 +9,5 @@ class Message(object):
         self.data = data
         self.transmission_time = transmission_time
 
-
     def __str__(self):
         return "id : {}, dlc: {}, data: {}, Transmission: {}".format(self.id,self.dlc, self.data, self.transmission_time)

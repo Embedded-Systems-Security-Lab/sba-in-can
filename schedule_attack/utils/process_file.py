@@ -37,8 +37,6 @@ class ProcessFile(object):
 
         return res
 
-
-
     @staticmethod
     def process_sae_data(path, bus_speed):
         res = []

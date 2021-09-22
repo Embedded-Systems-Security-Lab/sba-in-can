@@ -25,8 +25,6 @@ def get_preceded_id(sequence_list):
 
     return res
 
-
-
 file_path = './OAK-old/Attack_free_dataset.csv'
 bus_speed = 500000
 r = ReverseLogs(file_path, bus_speed) #Using bus_speed of 500kbs
