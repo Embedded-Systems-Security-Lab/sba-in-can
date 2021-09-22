@@ -1,4 +1,5 @@
 from ..utils.general import *
+from ..utils.logger import CustomLogger
 from .message import *
 import csv
 import heapq
@@ -21,17 +22,18 @@ class Simulation(object):
     __JITTER_RANDOM = 0.05
     __OFFSET_RANDOM = 100
 
-    def __init__(self, seed, bus_speed, with_jitter=False, with_offset=False):
+    def __init__(self, seed, bus_speed, with_jitter=False, with_offset=False,log_file="sim_logger.log"):
         super(Simulation, self).__init__()
         random.seed(seed)
         self.bus_speed = bus_speed
         self.with_jitter = with_jitter
         self.with_offset = with_offset
+        self.logger = CustomLogger(__name__,log_file)
 
     def job_init(self, output_dir, num_jobs,num,tag_num):
 
         if num >= len(General.HARMONIC_DATA):
-            print("index must be between 0 - 16")
+            self.logger.error("index must be between 0 - 16")
             sys.exit()
 
 
@@ -53,7 +55,7 @@ class Simulation(object):
                 try:
                     period = General.HARMONIC_DATA[num][random.randint(0,len(General.HARMONIC_DATA[num]) - 1)]
                 except:
-                    print("Invalid index")
+                    self.logger.error("Invalid index")
                     sys.exit()
                 periods_data.append(period)
             periods_data.sort()
@@ -82,7 +84,7 @@ class Simulation(object):
         sum_util = 0
         sum_util = sum([self.pending_queue[i].transmission_time/self.pending_queue[i].period \
         for i in range(0, len(self.pending_queue))])
-        print("\nUtilization Um, is: " , sum_util, len(self.pending_queue))
+        self.logger.info("\nUtilization Um, is: {} ".format(sum_util))
         return sum_util
 
     """Convert pending to active job."""
@@ -96,7 +98,7 @@ class Simulation(object):
         delta = 1/(self.bus_speed * 100)
         r_time = 0.0
         while r_time < max_time:
-            print("At t = " + str(r_time))
+            self.logger.debug("At t = {}".format(r_time))
             saved_jobs = []
             """+ self.pending_queue[0].jitter"""
             while self.pending_queue and (r_time - (self.pending_queue[0].release_time + self.pending_queue[0].jitter ))  > General.EPSILON:
