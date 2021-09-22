@@ -18,7 +18,7 @@ class CustomLogger(logging.getLoggerClass()):
         self.formatter = logging.Formatter(self.format)
 
         self.stream_handler = logging.StreamHandler()
-        self.stream_handler.setLevel(stream_level) # Hard We can change this
+        self.stream_handler.setLevel(stream_level) # We can change this
         self.stream_handler.setFormatter(self.formatter)
 
 
