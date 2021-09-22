@@ -3,15 +3,18 @@ import csv
 import math
 import sys
 from ..utils.general import *
+from ..utils.logger import CustomLogger
 from .message import REVMessage
+
 
 
 class ReverseLogs(object):
 
-    def __init__(self, csv_file, bus_speed):
+    def __init__(self, csv_file, bus_speed, log_file="reverse.log"):
         super(ReverseLogs, self).__init__()
         self.bus_speed = bus_speed
         self.log_from_csv(csv_file)
+        self.logger = CustomLogger(__name__,log_file)
 
 
     def log_from_csv(self, csv_file):
@@ -124,5 +127,5 @@ class ReverseLogs(object):
 
 
 
-            print ("ID: " +str(unique_id)+"\t [" +  str(lower_bound) + "," + str(upper_bound) + "]")
+            self.logger.info("ID: " +str(unique_id)+"\t [" +  str(lower_bound) + "," + str(upper_bound) + "]")
         return id_list
