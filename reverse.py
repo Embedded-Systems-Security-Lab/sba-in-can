@@ -3,7 +3,7 @@ import argparse
 
 parser = argparse.ArgumentParser()
 parser.add_argument("--data", type=str, help="CSV file to reverse engineer", default='./OAK-old/Attack_free_dataset.csv')
-parser.add_argument("--bus_speed", type=int, help="Number of distinct PIDs to simulate", default=500000)
+parser.add_argument("--bus_speed", type=int, help="Bus speed", default=500000)
 args = parser.parse_args()
 
 def main():
