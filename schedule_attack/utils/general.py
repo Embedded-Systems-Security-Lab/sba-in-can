@@ -33,7 +33,7 @@ class General(object):
         return time.strftime("%Y%m%d-%H%M%S") + "_" + str(num) + "_log.csv"
 
     @staticmethod
-    def get_transmission_time(data_len, bus_speed, max_bit=55):
+    def get_transmission_time(data_len, bus_speed, max_bit=44):
 
         assert (int(bus_speed) != 0), "Bus speed cannot be zero"
 
@@ -80,9 +80,19 @@ class General(object):
         hyperperiod_list = []
         for msg in data:
             if hyperperiod != None:
-                if msg.timestamp > hyperperiod:
+                if msg[3] > hyperperiod:
                     return hyperperiod_list
-            hyperperiod_list.append(msg.id)
+            hyperperiod_list.append(msg)
+        return hyperperiod_list
+
+    @staticmethod
+    def get_hyperperiod_list_len(data,total_len=None):
+        hyperperiod_list = []
+        for idx, msg in enumerate(data):
+            if total_len != None:
+                if idx >= total_len:
+                    return hyperperiod_list
+            hyperperiod_list.append(msg)
         return hyperperiod_list
 
     @staticmethod

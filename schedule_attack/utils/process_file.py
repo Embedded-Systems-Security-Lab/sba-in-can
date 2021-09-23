@@ -1,6 +1,5 @@
 import re
 from .general import *
-from ..reverse_engineer.message import REVMessage
 
 
 class ProcessFile(object):
@@ -16,7 +15,7 @@ class ProcessFile(object):
                 line = re.split(regular_exp, line)
                 ID, DLC, DATA, timestamp = line[4], 8, line[5], float(line[1])
                 transmission_time = General.get_transmission_time(DLC,bus_speed)
-                res.append(REVMessage(ID, DLC, DATA, timestamp, transmission_time))
+                res.append((ID, DLC, DATA, timestamp, transmission_time))
 
         return res
 
@@ -33,7 +32,7 @@ class ProcessFile(object):
                 ID, DLC, DATA, timestamp = row[0], int(row[1]), row[2], float(row[3])
 
                 transmission_time = General.get_transmission_time(DLC,bus_speed)
-                res.append(REVMessage(ID, DLC, DATA, timestamp, transmission_time))
+                res.append((ID, DLC, DATA, timestamp, transmission_time))
 
         return res
 
@@ -55,6 +54,6 @@ class ProcessFile(object):
                     print('cant')
                 ID, DLC, DATA, timestamp = int(line[3].strip("'")), dlc, data, float(line[0])
                 transmission_time = General.get_transmission_time(DLC,bus_speed)
-                res.append(REVMessage(ID, DLC, DATA, timestamp, transmission_time))
+                res.append((ID, DLC, DATA, timestamp, transmission_time))
 
         return res
