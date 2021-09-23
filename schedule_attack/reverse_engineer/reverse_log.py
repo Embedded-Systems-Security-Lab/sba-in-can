@@ -5,33 +5,29 @@ import sys
 from ..utils.general import *
 from ..utils.logger import CustomLogger
 from .message import REVMessage
+from ..utils.process_file import ProcessFile
 
 
 
 class ReverseLogs(object):
 
-    def __init__(self, csv_file, bus_speed, log_file="reverse_logger.log"):
+    def __init__(self, file, bus_speed, log_file="reverse_logger.log"):
         super(ReverseLogs, self).__init__()
         self.bus_speed = bus_speed
-        self.log_from_csv(csv_file)
+        if file.endswith('.csv'):
+            self.log_from_csv(file)
+        elif file.endswith('.txt'):
+            self.log_from_txt(file)
+        else:
+            sys.exit()
         self.logger = CustomLogger(__name__,log_file)
 
 
     def log_from_csv(self, csv_file):
-        self.log_list = []
-        with open(csv_file, 'r') as file:
-          has_header = csv.Sniffer().has_header(file.read(General.HEADER_DATA_BYTE))
-          file.seek(0)
-          reader = csv.reader(file)
-          if has_header:
-              next(reader)
-          for row in reader:
-              ID = int(row[0],16)
-              DLC = int(row[1])
-              DATA = row[2]
-              timestamp = float(row[3])
-              transmission_time = General.get_transmission_time(DLC,self.bus_speed)
-              self.log_list.append(REVMessage(ID, DLC, DATA, timestamp, transmission_time))
+        self.log_list = [REVMessage(*data) for data in ProcessFile.process_oak_old_data(csv_file,self.bus_speed)]
+
+    def log_from_txt(self, txt_file):
+        self.log_list = [REVMessage(*data) for data in ProcessFile.process_sae_data(txt_file,self.bus_speed)]
 
     def find_previous_lower_id(self, index):
         lower_id = index - 1
