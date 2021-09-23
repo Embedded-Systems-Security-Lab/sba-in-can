@@ -32,7 +32,7 @@ def main():
     #hyperperiod = 1
     sequence = args.num_period * hyperperiod
 
-    sequence_list = General.get_hyperperiod_list(data, sequence)
+    sequence_list = [msg[0] for msg in General.get_hyperperiod_list(data, sequence)]
 
     logger.debug("The sequence list are {}".format(sequence_list))
 
