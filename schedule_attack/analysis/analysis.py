@@ -17,8 +17,8 @@ class Analysis(object):
     def __init__(self, num_of_hyperperiods, file_name, bus_speed,log_file="analysis_logger.log"):
 
         self.logger = CustomLogger(__name__,log_file)
-        #self.hyperperiod = 1.009745 # Manual inspection
-        self.hyperperiod = 1.0
+        self.hyperperiod = 1.009745 # Manual inspection
+        #self.hyperperiod = 1.0
         self.reset(num_of_hyperperiods, file_name, bus_speed)
 
 
@@ -161,6 +161,13 @@ class Analysis(object):
 
         return prior_msg_t, pat
 
+    def get_next_msg_info(self):
+
+        for i in range(len(self.data)):
+            ID, DLC, DATA, timestamp, transmission_time = self.data[i]
+            yield ID, DLC, timestamp, transmission_time
+
+
     def verify_target_times(self, num_of_periods_to_check, num_of_periods_analyzed, optimization_method=Optimization.AVERAGE_START_TIME):
 
         if not self.patterns:
@@ -190,7 +197,8 @@ class Analysis(object):
                     average = 0
                     for i in range(self.num_of_hyperperiods):
                         if self.patterns[id][i]:
-                            print(self.patterns[id][i][0][1])
+                            print(len(self.patterns[id][i]),len(self.patterns[id][0]))
+
                             if self.patterns[id][i][j][1] != None:
                                 sum += self.patterns[id][i][j][3] - (period*i)
                                 count += 1
@@ -242,7 +250,49 @@ class Analysis(object):
                 sys.exit()
 
             pattern_num = 1
+            for times_and_seqs in self.patterns[id][0]:
 
+                next_prev_msg_time = times_and_seqs[5]
+                prev_msg = times_and_seqs[1]
+                target_msg = times_and_seqs[2]
+                time_stamp = 0
+                hit_counter = 0
+                targ_instance_num = times_and_seqs[0]
+
+
+                if prev_msg == None:
+                    self.logger.debug('skipping ahead due to idle count')
+                    continue
+
+                p = 2
+                while p < num_of_periods_to_check + num_of_periods_analyzed:
+
+                    while float(time_stamp) < next_prev_msg_time:
+                        while float(time_stamp) < next_prev_msg_time:
+                            ID_field, dlc, time_stamp, tx_time = self.get_next_msg_info()
+                        if prev_msg == ID_field:
+                        #print('prev_msg match')
+                        next_prev_msg_start = time_stamp - tx_time
+                        if next_prev_msg_start <= next_prev_msg_time <= float(time_stamp):
+                            #print('Next iteration of prev message hit')
+                            ID_field, dlc, time_stamp, tx_time = self.get_next_msg_info()
+                            if target_msg == ID_field:
+                                if p > (num_of_periods_analyzed + 2):
+                                    self.logger.debug('Verified {} {} sequence hit at {} in period {}'.format(prev_msg,target_msg,next_prev_msg_time,p))
+                                    hit_counter += 1
+
+                    # Determine next time message prior to target is expected
+                    next_prev_msg_time += period
+                    #print('period', p)
+                    p += 1
+
+
+                self.logger.debug("total hits for instance # {} of  {} pattern # {},  {} \
+                     is {} {}".format(targ_instance_num,target_msg,pattern_num, \
+                        times_and_seqs[1],hit_counter,num_of_periods_to_check-1))
+
+
+                pattern_num += 1
 
 
 
