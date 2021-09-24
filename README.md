@@ -13,10 +13,9 @@
 * Install libraries using requirements.txt file
 * To run simulation run genlog.py
 * To reverse engineer files run reverse.py
-* TODO: Add what to do in Analysis part
+* Run testing_analysis.py to perform analysis on how to carry out schedule based attack
 
 
 ### Who do I talk to? ###
-TODO:
-* Repo owner or admin
-* Other community or team contact
+
+* Dr Gedare Bloom and Dr Sena
