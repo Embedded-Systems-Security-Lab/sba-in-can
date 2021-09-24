@@ -4,6 +4,7 @@ import csv
 import json
 import os
 import sys
+import time
 #from posix import times_result
 from ..utils.process_file import ProcessFile
 from ..reverse_engineer.reverse_log import ReverseLogs
@@ -17,8 +18,8 @@ class Analysis(object):
     def __init__(self, num_of_hyperperiods, file_name, bus_speed,log_file="analysis_logger.log"):
 
         self.logger = CustomLogger(__name__,log_file)
-        self.hyperperiod = 1.009745 # Manual inspection
-        #self.hyperperiod = 1.0
+        #self.hyperperiod = 1.009745 # Manual inspection
+        self.hyperperiod = 1.000023 # Manual inspection for sae datasets
         self.reset(num_of_hyperperiods, file_name, bus_speed)
 
 
@@ -27,7 +28,7 @@ class Analysis(object):
         self.num_of_hyperperiods = num_of_hyperperiods
         self.file_name = file_name
         self.bus_speed = bus_speed
-        self.total_hyperiod = self.hyperperiod * num_of_hyperperiods
+        #self.total_hyperiod = self.hyperperiod * num_of_hyperperiods
         self.ifs = 3/self.bus_speed
         self.get_entire_ids()
         self.get_number_of_message()
@@ -42,14 +43,13 @@ class Analysis(object):
 
         for victim_ID in self.entire_set_of_IDs:
             self.patterns.setdefault(victim_ID, {})
-            prev_msg_time = 0
+            prev_msg_time = -1
             self.patterns[victim_ID]
             for i in range(self.num_of_hyperperiods):
                 prev_msg_time, pat= self.identify_patterns(i, prev_msg_time, int(victim_ID))
                 self.logger.info(prev_msg_time)
                 self.logger.info(pat)
                 self.patterns[victim_ID].setdefault(i, pat)
-
         self.logger.debug("All patterns is {}".format(self.patterns))
 
 
@@ -71,11 +71,9 @@ class Analysis(object):
         self.hyperperiod_list = General.get_hyperperiod_list(self.data, self.hyperperiod)
         self.one_hyperperiod_len = len(self.hyperperiod_list)
         self.total_hyperperiod_len = self.one_hyperperiod_len * self.num_of_hyperperiods
-        #self.total_hyperperiod_list = General.get_hyperperiod_list(self.data, self.total_hyperiod)
         self.total_hyperperiod_list = General.get_hyperperiod_list_len(self.data, self.total_hyperperiod_len)
         self.logger.debug("len of Hyperperiod is: {} ".format(len(self.hyperperiod_list)))
         self.logger.debug("len of total Hyperperiod is: {} ".format(len(self.total_hyperperiod_list)))
-
 
     def identify_patterns(self, current_hyperperiod, prior_msg_t, target_msg):
         msg_count = current_hyperperiod * self.one_hyperperiod_len
@@ -83,8 +81,6 @@ class Analysis(object):
         period_limit = (current_hyperperiod+1) * self.one_hyperperiod_len
         l_time, h_time = 0, 0
         l_pat, h_pat = [0], [0]
-        l_sequence, h_sequence = [], []
-        #sequence_set = set()
         targ_msg_instance = 0
 
         pat = []
@@ -129,43 +125,32 @@ class Analysis(object):
 
                 if l_time > 0:
 
-                    #sequence_set.add(prev_msg)
-
                     pat.append(
                         [targ_msg_instance, prev_msg, msg_ID, msg_start_time,
                         msg_midpoint, l_time, msg_tx_time]
                         )
                 elif h_time > 0:
 
-                    #sequence_set.add(prev_msg)
-
                     pat.append(
                         [targ_msg_instance, prev_msg, msg_ID, msg_start_time,
                         msg_midpoint, h_time, msg_tx_time]
                         )
 
-                elif int(msg_ID) < target_msg:
+            elif int(msg_ID) < target_msg:
 
-                    if h_time == 0:
-                        h_time = msg_timestamp
-                        l_time = 0
-                        l_sequence = []
-                        prev_msg = msg_ID
-                    else:
-                        prev_msg = msg_ID
+                if h_time == 0:
+                    h_time = msg_timestamp
+                    l_time = 0
+                    l_sequence = []
+                    prev_msg = msg_ID
+                else:
+                    prev_msg = msg_ID
 
             prior_msg_t = msg_timestamp
 
             msg_count += 1
         self.logger.debug("Number of msg_count is {} and id: {}".format(msg_count - prev_msg_count, target_msg))
-
         return prior_msg_t, pat
-
-    def get_next_msg_info(self):
-
-        for i in range(len(self.data)):
-            ID, DLC, DATA, timestamp, transmission_time = self.data[i]
-            yield ID, DLC, timestamp, transmission_time
 
 
     def verify_target_times(self, num_of_periods_to_check, num_of_periods_analyzed, optimization_method=Optimization.AVERAGE_START_TIME):
@@ -197,8 +182,6 @@ class Analysis(object):
                     average = 0
                     for i in range(self.num_of_hyperperiods):
                         if self.patterns[id][i]:
-                            print(len(self.patterns[id][i]),len(self.patterns[id][0]))
-
                             if self.patterns[id][i][j][1] != None:
                                 sum += self.patterns[id][i][j][3] - (period*i)
                                 count += 1
@@ -213,10 +196,9 @@ class Analysis(object):
                 self.logger.debug('Performing intersection method (Method #3) for optimization')
                 # u = 1
 
-                for j in range(self.patterns[id][0]):
+                for j in range(len(self.patterns[id][0])):
                     max_time = None
                     for i in range(self.num_of_hyperperiods):
-                        #print(data[i][3][0][1])
                         if self.patterns[id][i] and self.patterns[id][i][j][1] != None:
                             current_time = (self.patterns[id][i][j][3] - (period*i))
                             if max_time == None or current_time > max_time:
@@ -229,12 +211,11 @@ class Analysis(object):
             elif optimization_method == Optimization.AVERAGE_MID_TRANS:
                 self.logger.debug('\nPerforming average midpoint time method (Method #4) for optimization\n')
 
-                for j in range(self.patterns[id][0]):
+                for j in range(len(self.patterns[id][0])):
                     sum = 0
                     count = 0
                     average = 0
                     for i in range(self.num_of_hyperperiods):
-                        #print(data[i][3][0][1])
                         if self.patterns[id][i] and self.patterns[id][i][j][1] != None:
                             sum += self.patterns[id][i][j][4] - (period*i)
                             count += 1
@@ -263,28 +244,31 @@ class Analysis(object):
                 if prev_msg == None:
                     self.logger.debug('skipping ahead due to idle count')
                     continue
+                idx = 0
 
                 p = 2
                 while p < num_of_periods_to_check + num_of_periods_analyzed:
 
-                    while float(time_stamp) < next_prev_msg_time:
-                        while float(time_stamp) < next_prev_msg_time:
-                            ID_field, dlc, time_stamp, tx_time = self.get_next_msg_info()
-                        if prev_msg == ID_field:
-                        #print('prev_msg match')
+
+                    while time_stamp < next_prev_msg_time:
+                        ID_field, dlc, _ ,time_stamp, tx_time = self.data[idx]
+                        idx += 1
+                    if prev_msg == ID_field:
                         next_prev_msg_start = time_stamp - tx_time
                         if next_prev_msg_start <= next_prev_msg_time <= float(time_stamp):
-                            #print('Next iteration of prev message hit')
-                            ID_field, dlc, time_stamp, tx_time = self.get_next_msg_info()
+                            ID_field, dlc, _ ,time_stamp, tx_time = self.data[idx]
+                            idx += 1
                             if target_msg == ID_field:
                                 if p > (num_of_periods_analyzed + 2):
                                     self.logger.debug('Verified {} {} sequence hit at {} in period {}'.format(prev_msg,target_msg,next_prev_msg_time,p))
                                     hit_counter += 1
 
-                    # Determine next time message prior to target is expected
+                # Determine next time message prior to target is expected
                     next_prev_msg_time += period
-                    #print('period', p)
                     p += 1
+                    if idx >= len(self.data):
+                        self.logger.debug("Finished processing the data")
+                        break
 
 
                 self.logger.debug("total hits for instance # {} of  {} pattern # {},  {} \
@@ -293,23 +277,3 @@ class Analysis(object):
 
 
                 pattern_num += 1
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# def main():
-#     a = Analysis(1, "../../OAK-old/tm4c-sae-125kbps-10m-reset-5.txt", 125000)
-
-
-# if __name__ == '__main__':
-#     main()
