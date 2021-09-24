@@ -45,6 +45,7 @@ class ProcessFile(object):
                 if index == 0:
                     continue
                 line.rstrip()
+
                 line = line.split(',')
                 dlc = line[-4]
                 data = line[-3]

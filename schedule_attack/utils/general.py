@@ -37,7 +37,7 @@ class General(object):
 
         assert (int(bus_speed) != 0), "Bus speed cannot be zero"
 
-        return (max_bit + (10* int(data_len))) * (1/float(bus_speed))
+        return (max_bit + (8* int(data_len))) * (1/float(bus_speed))
 
     #To create a directory
     @staticmethod
