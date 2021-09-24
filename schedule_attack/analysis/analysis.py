@@ -44,12 +44,9 @@ class Analysis(object):
         for victim_ID in self.entire_set_of_IDs:
             self.patterns.setdefault(victim_ID, {})
             prev_msg_time = -1
-            self.patterns[victim_ID]
             for i in range(self.num_of_hyperperiods):
                 prev_msg_time, pat= self.identify_patterns(i, prev_msg_time, int(victim_ID))
-                self.logger.info(prev_msg_time)
-                self.logger.info(pat)
-                self.patterns[victim_ID].setdefault(i, pat)
+                self.patterns[victim_ID][i] = pat
         self.logger.debug("All patterns is {}".format(self.patterns))
 
 
@@ -170,7 +167,6 @@ class Analysis(object):
                 self.logger.debug('Using time of previous msg + period method (Method #1).  No optimizations.')
                 u = 0
                 while u < num_of_patterns_found_in_first_period:
-                    self.logger.debug(u)
                     self.patterns[id][0][u][5] += 1
                     u += 1
 
@@ -209,7 +205,7 @@ class Analysis(object):
                             self.patterns[id][i][j][5] = max_time + (period*(i+1))
 
             elif optimization_method == Optimization.AVERAGE_MID_TRANS:
-                self.logger.debug('\nPerforming average midpoint time method (Method #4) for optimization\n')
+                self.logger.debug('Performing average midpoint time method (Method #4) for optimization')
 
                 for j in range(len(self.patterns[id][0])):
                     sum = 0
