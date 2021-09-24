@@ -9,8 +9,8 @@ parser.add_argument("--data", type=str, help="CSV file to reverse engineer", def
 parser.add_argument("--bus_speed", type=int, help="Bus speed", default=125000)
 parser.add_argument("--num_period_analyze", type=int, help="Number of hyperiods to analyze", default=10)
 parser.add_argument("--num_periods_to_verify", type=int, help="Number of hyperiods to verify", default=50)
-parser.add_argument("--type_of_opt", type=Optimization.from_string, help="Optimization type ", default=Optimization.NO_OPT)
-parser.add_argument("--logger_name", type=str, help="Logger name to add logger", choices=list(Optimization), default="main_analysis_logger.log")
+parser.add_argument("--type_of_opt", type=Optimization.from_string, help="Optimization type ", choices=list(Optimization), default=Optimization.NO_OPT)
+parser.add_argument("--logger_name", type=str, help="Logger name to add logger", default="main_analysis_logger.log")
 args = parser.parse_args()
 
 logger = CustomLogger(__name__,args.logger_name)
